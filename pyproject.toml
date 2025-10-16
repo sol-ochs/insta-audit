@@ -1,7 +1,10 @@
 [project]
 name="insta-audit"
 version="0.1.0"
-description="A tool for auditing Instagram following/followers."
+description="A tool for auditing Instagram following and followers."
+dependencies=[
+    "argparse"
+]
 
 [project.scripts]
 insta-audit="insta_audit.cli:main"

@@ -21,5 +21,5 @@ A tool for auditing Instagram following/followers. For petty users who only foll
 3. Run command:
 
     ```bash
-    insta-audit
+    insta-audit followers.json following.json
     ```
