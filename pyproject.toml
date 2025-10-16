@@ -1,0 +1,7 @@
+[project]
+name="insta-audit"
+version="0.1.0"
+description="A tool for auditing Instagram following/followers."
+
+[project.scripts]
+insta-audit="insta_audit.cli:main"
