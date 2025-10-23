@@ -1,6 +1,6 @@
 # Insta Audit
 
-A tool for auditing Instagram following/followers. For petty users who only follow accounts that follow back.
+A tool for auditing Instagram followers/following. For petty users who only follow accounts that follow back.
 
 ## Usage
 
