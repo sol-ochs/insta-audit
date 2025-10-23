@@ -134,7 +134,30 @@ function showError(message) {
     }, ERROR_DISMISS_TIME);
 }
 
-// Parse Instagram JSON data (handles multiple formats)
+/**
+ * Parse Instagram JSON data export files and extract usernames
+ *
+ * Instagram export files come in two different formats:
+ *
+ * 1. following.json format:
+ *    { relationships_following: [
+ *        { title: "username", ... },
+ *        { title: "another_user", ... }
+ *    ]}
+ *
+ * 2. followers_1.json format:
+ *    { relationships_followers: [
+ *        { string_list_data: [{ value: "username", ... }], ... },
+ *        { string_list_data: [{ value: "another_user", ... }], ... }
+ *    ]}
+ *
+ * This function handles both formats and normalizes them into a Set of lowercase usernames
+ *
+ * @param {Object} data - The parsed JSON data from Instagram export
+ * @param {string} type - Either FILE_TYPE.FOLLOWERS or FILE_TYPE.FOLLOWING
+ * @returns {Set<string>} Set of lowercase usernames
+ * @throws {Error} If data format is invalid or incompatible
+ */
 function parseInstagramData(data, type) {
     const usernames = new Set();
 
@@ -144,6 +167,7 @@ function parseInstagramData(data, type) {
     }
 
     // Determine if we have a wrapper object or direct array
+    // Instagram wraps the data in either 'relationships_following' or 'relationships_followers'
     let items = data;
     if (data.relationships_following) {
         items = data.relationships_following;
@@ -157,13 +181,16 @@ function parseInstagramData(data, type) {
     }
 
     // Process array of items
+    // Each item can have username in different fields depending on the export format
     items.forEach((item, index) => {
         try {
-            // Instagram format: username can be in 'title' field (following.json)
+            // Format 1: Username in 'title' field (following.json)
+            // Example: { title: "username", href: "...", ... }
             if (item.title && item.title.trim() !== '') {
                 usernames.add(item.title.toLowerCase());
             }
-            // Or in string_list_data[].value (followers.json)
+            // Format 2: Username in string_list_data[].value (followers.json)
+            // Example: { string_list_data: [{ value: "username", ... }], ... }
             else if (item.string_list_data && Array.isArray(item.string_list_data)) {
                 item.string_list_data.forEach(user => {
                     if (user.value && typeof user.value === 'string') {
@@ -171,7 +198,9 @@ function parseInstagramData(data, type) {
                     }
                 });
             }
+            // If neither format is found, the item is silently skipped
         } catch (itemError) {
+            // Log but don't fail on individual malformed items
             debug.warn(`Skipping invalid item at index ${index}:`, itemError);
         }
     });
