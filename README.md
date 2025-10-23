@@ -1,25 +1,36 @@
 # Insta Audit
 
-A tool for auditing Instagram followers/following. For petty users who only follow accounts that follow back.
+A web tool for auditing Instagram followers and following. For petty users who only follow accounts that follow back.
 
-## Usage
+**[🚀 Try it live](https://sol-ochs.github.io/insta-audit)**
 
-1. Create/activate virtual environment:
+## Features
 
-    ```bash
-    cd insta-audit
-    python3 -m venv .venv
-    source .venv/bin/activate
-    ```
+- Find who you follow that doesn't follow you back
+- Find who follows you that you don't follow back
+- All processing happens locally in the your browser - the data never leaves your device
 
-2. Install project:
+## How to Use
 
-    ```bash
-    pip install -e .
-    ```
+Visit the [live site](https://sol-ochs.github.io/insta-audit) and follow the instructions there to export your Instagram data and upload to the site for analysis.
 
-3. Run command:
+## Privacy
 
-    ```bash
-    insta-audit followers.json following.json
-    ```
+Your data is processed entirely in your browser. No files are uploaded to any server.
+
+## Development
+
+To run locally:
+
+```bash
+# Clone the repository
+git clone https://github.com/sol-ochs/insta-audit.git
+cd insta-audit
+
+# Open index.html in your browser
+open index.html
+```
+
+## Deployment
+
+This site is automatically deployed to GitHub Pages. Every push to the `main` branch triggers a deployment workflow that publishes the site to [https://sol-ochs.github.io/insta-audit](https://sol-ochs.github.io/insta-audit).
