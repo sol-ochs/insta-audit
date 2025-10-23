@@ -1,5 +1,14 @@
 // Configuration
 const DEBUG_MODE = false; // Set to true for development logging
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB in bytes
+const ERROR_DISMISS_TIME = 5000; // 5 seconds
+const ERROR_FADE_TIME = 300; // 300ms
+
+// Constants for file types
+const FILE_TYPE = {
+    FOLLOWERS: 'followers',
+    FOLLOWING: 'following'
+};
 
 // Helper for debug logging
 const debug = {
@@ -23,8 +32,8 @@ const analyzeBtn = document.getElementById('analyzeBtn');
 const resultsSection = document.getElementById('results');
 
 // Event Listeners
-followersFile.addEventListener('change', (e) => handleFileUpload(e, 'followers'));
-followingFile.addEventListener('change', (e) => handleFileUpload(e, 'following'));
+followersFile.addEventListener('change', (e) => handleFileUpload(e, FILE_TYPE.FOLLOWERS));
+followingFile.addEventListener('change', (e) => handleFileUpload(e, FILE_TYPE.FOLLOWING));
 analyzeBtn.addEventListener('click', analyzeData);
 
 // Handle file upload
@@ -39,10 +48,9 @@ function handleFileUpload(event, type) {
         return;
     }
 
-    // Validate file size (max 50MB)
-    const maxSize = 50 * 1024 * 1024;
-    if (file.size > maxSize) {
-        showError(`File is too large. Maximum size is 50MB. Your file: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
+    // Validate file size
+    if (file.size > MAX_FILE_SIZE) {
+        showError(`File is too large. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB. Your file: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
         event.target.value = '';
         return;
     }
@@ -58,7 +66,7 @@ function handleFileUpload(event, type) {
         try {
             const data = JSON.parse(e.target.result);
 
-            if (type === 'followers') {
+            if (type === FILE_TYPE.FOLLOWERS) {
                 debug.log(`Parsing followers from ${file.name}`);
                 followersData = parseInstagramData(data, type);
 
@@ -71,7 +79,7 @@ function handleFileUpload(event, type) {
 
                 followersFileName.textContent = file.name;
                 followersUpload.classList.add('has-file');
-            } else {
+            } else if (type === FILE_TYPE.FOLLOWING) {
                 debug.log(`Parsing following from ${file.name}`);
                 followingData = parseInstagramData(data, type);
 
@@ -119,11 +127,11 @@ function showError(message) {
 
     header.after(errorDiv);
 
-    // Auto-dismiss after 5 seconds
+    // Auto-dismiss after configured time
     setTimeout(() => {
         errorDiv.classList.add('fade-out');
-        setTimeout(() => errorDiv.remove(), 300);
-    }, 5000);
+        setTimeout(() => errorDiv.remove(), ERROR_FADE_TIME);
+    }, ERROR_DISMISS_TIME);
 }
 
 // Parse Instagram JSON data (handles multiple formats)
