@@ -27,6 +27,31 @@
             <p class="tagline">Find out who's not following you back</p>
         </header>
 
+        <div class="instructions">
+            <details>
+                <summary>How to export your Instagram data</summary>
+                <ol>
+                    <li>Open Instagram on your phone or desktop</li>
+                    <li>Go to Settings → Accounts Center → Your information and permissions</li>
+                    <li>Select Export your information</li>
+                    <li>Click Create export</li>
+                    <li>Select your Instagram account</li>
+                    <li>Select Export to device</li>
+                    <li>
+                        Choose the following options:
+                        <ul>
+                            <li>Customize information: Select only Connections -> Followers and following</li>
+                            <li>Date range: All time</li>
+                            <li>Format: JSON</li>
+                        </ul>
+                    </li>
+                    <li>Click Start export and wait for the download link (usually takes a few minutes). You'll receive an email when it's ready</li>
+                    <li>Download and extract the ZIP file</li>
+                    <li>Upload <code>followers_1.json</code> and <code>following.json</code> from the extracted folder</li>
+                </ol>
+            </details>
+        </div>
+
         <div class="upload-section">
             <div class="upload-card">
                 <div class="upload-box" id="followersUpload">
