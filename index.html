@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insta Audit</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>
+                <svg class="logo" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="2" width="28" height="28" rx="6" stroke="url(#gradient)" stroke-width="2.5"/>
+                    <circle cx="16" cy="16" r="6" stroke="url(#gradient)" stroke-width="2.5"/>
+                    <circle cx="24" cy="8" r="1.5" fill="url(#gradient)"/>
+                    <defs>
+                        <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32">
+                            <stop offset="0%" stop-color="#FD5949"/>
+                            <stop offset="50%" stop-color="#D6249F"/>
+                            <stop offset="100%" stop-color="#285AEB"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                Insta Audit
+            </h1>
+            <p class="tagline">Find out who's not following you back</p>
+        </header>
+
+        <div class="upload-section">
+            <div class="upload-card">
+                <div class="upload-box" id="followersUpload">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <h3>Followers</h3>
+                    <p>Upload followers.json</p>
+                    <input type="file" id="followersFile" accept=".json" />
+                    <span class="file-name" id="followersFileName"></span>
+                </div>
+            </div>
+
+            <div class="upload-card">
+                <div class="upload-box" id="followingUpload">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <h3>Following</h3>
+                    <p>Upload following.json</p>
+                    <input type="file" id="followingFile" accept=".json" />
+                    <span class="file-name" id="followingFileName"></span>
+                </div>
+            </div>
+        </div>
+
+        <button id="analyzeBtn" class="analyze-btn" disabled>Analyze</button>
+
+        <div id="results" class="results hidden">
+            <div class="result-section">
+                <h2>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Not Following You Back
+                    <span class="count" id="notFollowingBackCount">0</span>
+                </h2>
+                <div id="notFollowingBackList" class="user-list"></div>
+            </div>
+
+            <div class="result-section">
+                <h2>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M12.5 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM20 8v6M23 11h-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    You're Not Following Back
+                    <span class="count" id="notFollowedBackCount">0</span>
+                </h2>
+                <div id="notFollowedBackList" class="user-list"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Your data never leaves your browser. All processing happens locally.</p>
+            <a href="https://github.com/yourusername/insta-audit" target="_blank">View on GitHub</a>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
