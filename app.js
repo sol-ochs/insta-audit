@@ -1,3 +1,13 @@
+// Configuration
+const DEBUG_MODE = false; // Set to true for development logging
+
+// Helper for debug logging
+const debug = {
+    log: (...args) => DEBUG_MODE && console.log(...args),
+    warn: (...args) => DEBUG_MODE && console.warn(...args),
+    error: (...args) => console.error(...args) // Always show errors
+};
+
 // State
 let followersData = null;
 let followingData = null;
@@ -22,19 +32,56 @@ function handleFileUpload(event, type) {
     const file = event.target.files[0];
     if (!file) return;
 
+    // Validate file type
+    if (!file.name.endsWith('.json')) {
+        showError(`Please upload a JSON file for ${type}. Selected file: ${file.name}`);
+        event.target.value = ''; // Reset file input
+        return;
+    }
+
+    // Validate file size (max 50MB)
+    const maxSize = 50 * 1024 * 1024;
+    if (file.size > maxSize) {
+        showError(`File is too large. Maximum size is 50MB. Your file: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
+        event.target.value = '';
+        return;
+    }
+
     const reader = new FileReader();
+
+    reader.onerror = () => {
+        showError(`Failed to read ${type} file. Please try again.`);
+        event.target.value = '';
+    };
+
     reader.onload = (e) => {
         try {
             const data = JSON.parse(e.target.result);
 
             if (type === 'followers') {
-                console.log(`Parsing followers from ${file.name}`);
-                followersData = parseInstagramData(data);
+                debug.log(`Parsing followers from ${file.name}`);
+                followersData = parseInstagramData(data, type);
+
+                if (followersData.size === 0) {
+                    showError(`No valid follower data found in ${file.name}. Please check that you uploaded the correct followers file from Instagram.`);
+                    followersData = null;
+                    event.target.value = '';
+                    return;
+                }
+
                 followersFileName.textContent = file.name;
                 followersUpload.classList.add('has-file');
             } else {
-                console.log(`Parsing following from ${file.name}`);
-                followingData = parseInstagramData(data);
+                debug.log(`Parsing following from ${file.name}`);
+                followingData = parseInstagramData(data, type);
+
+                if (followingData.size === 0) {
+                    showError(`No valid following data found in ${file.name}. Please check that you uploaded the correct following file from Instagram.`);
+                    followingData = null;
+                    event.target.value = '';
+                    return;
+                }
+
                 followingFileName.textContent = file.name;
                 followingUpload.classList.add('has-file');
             }
@@ -44,15 +91,49 @@ function handleFileUpload(event, type) {
                 analyzeBtn.disabled = false;
             }
         } catch (error) {
-            alert(`Error parsing ${type} file: ${error.message}`);
+            if (error instanceof SyntaxError) {
+                showError(`Invalid JSON file for ${type}. Please make sure you uploaded a valid Instagram data export file.`);
+            } else {
+                showError(`Error processing ${type} file: ${error.message}`);
+            }
+            event.target.value = '';
         }
     };
     reader.readAsText(file);
 }
 
+// Show error message to user
+function showError(message) {
+    // Create error element
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.textContent = message;
+
+    // Insert after header
+    const header = document.querySelector('header');
+    const existingError = document.querySelector('.error-message');
+
+    if (existingError) {
+        existingError.remove();
+    }
+
+    header.after(errorDiv);
+
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+        errorDiv.classList.add('fade-out');
+        setTimeout(() => errorDiv.remove(), 300);
+    }, 5000);
+}
+
 // Parse Instagram JSON data (handles multiple formats)
-function parseInstagramData(data) {
+function parseInstagramData(data, type) {
     const usernames = new Set();
+
+    // Validate input
+    if (!data || typeof data !== 'object') {
+        throw new Error('Invalid data format. Expected a JSON object.');
+    }
 
     // Determine if we have a wrapper object or direct array
     let items = data;
@@ -62,9 +143,14 @@ function parseInstagramData(data) {
         items = data.relationships_followers;
     }
 
+    // Validate array format
+    if (!Array.isArray(items)) {
+        throw new Error(`Expected an array of ${type} but received ${typeof items}. Please check that you uploaded the correct Instagram export file.`);
+    }
+
     // Process array of items
-    if (Array.isArray(items)) {
-        items.forEach(item => {
+    items.forEach((item, index) => {
+        try {
             // Instagram format: username can be in 'title' field (following.json)
             if (item.title && item.title.trim() !== '') {
                 usernames.add(item.title.toLowerCase());
@@ -72,15 +158,17 @@ function parseInstagramData(data) {
             // Or in string_list_data[].value (followers.json)
             else if (item.string_list_data && Array.isArray(item.string_list_data)) {
                 item.string_list_data.forEach(user => {
-                    if (user.value) {
+                    if (user.value && typeof user.value === 'string') {
                         usernames.add(user.value.toLowerCase());
                     }
                 });
             }
-        });
-    }
+        } catch (itemError) {
+            debug.warn(`Skipping invalid item at index ${index}:`, itemError);
+        }
+    });
 
-    console.log(`Parsed ${usernames.size} unique usernames`);
+    debug.log(`Parsed ${usernames.size} unique usernames`);
     return usernames;
 }
 
@@ -91,8 +179,8 @@ function analyzeData() {
         return;
     }
 
-    console.log('Followers:', followersData.size);
-    console.log('Following:', followingData.size);
+    debug.log('Followers:', followersData.size);
+    debug.log('Following:', followingData.size);
 
     // Find users you follow who don't follow you back
     const notFollowingBack = [...followingData].filter(user => !followersData.has(user));
@@ -100,8 +188,8 @@ function analyzeData() {
     // Find users who follow you that you don't follow back
     const notFollowedBack = [...followersData].filter(user => !followingData.has(user));
 
-    console.log('Not following you back:', notFollowingBack.length);
-    console.log('You not following back:', notFollowedBack.length);
+    debug.log('Not following you back:', notFollowingBack.length);
+    debug.log('You not following back:', notFollowedBack.length);
 
     // Display results
     displayResults(notFollowingBack, notFollowedBack);
