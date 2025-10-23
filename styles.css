@@ -291,6 +291,12 @@ h1 {
     overflow-y: auto;
 }
 
+.empty-state {
+    color: #a8a8a8;
+    text-align: center;
+    padding: 20px;
+}
+
 .user-list::-webkit-scrollbar {
     width: 8px;
 }

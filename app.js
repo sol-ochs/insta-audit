@@ -221,7 +221,7 @@ function displayResults(notFollowingBack, notFollowedBack) {
     // Display "Not Following Back" list
     notFollowingBackList.innerHTML = '';
     if (notFollowingBack.length === 0) {
-        notFollowingBackList.innerHTML = '<p style="color: #a8a8a8; text-align: center; padding: 20px;">Everyone you follow follows you back! 🎉</p>';
+        notFollowingBackList.innerHTML = '<p class="empty-state">Everyone you follow follows you back! 🎉</p>';
     } else {
         notFollowingBack.sort().forEach(username => {
             notFollowingBackList.appendChild(createUserItem(username));
@@ -231,7 +231,7 @@ function displayResults(notFollowingBack, notFollowedBack) {
     // Display "Not Followed Back" list
     notFollowedBackList.innerHTML = '';
     if (notFollowedBack.length === 0) {
-        notFollowedBackList.innerHTML = '<p style="color: #a8a8a8; text-align: center; padding: 20px;">You follow everyone back! ✨</p>';
+        notFollowedBackList.innerHTML = '<p class="empty-state">You follow everyone back! ✨</p>';
     } else {
         notFollowedBack.sort().forEach(username => {
             notFollowedBackList.appendChild(createUserItem(username));
