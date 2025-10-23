@@ -212,7 +212,7 @@ function parseInstagramData(data, type) {
 // Analyze the data
 function analyzeData() {
     if (!followersData || !followingData) {
-        alert('Please upload both files first');
+        showError('Please upload both files first');
         return;
     }
 
